@@ -78,12 +78,12 @@ public class PenguinsData
             }
         });
 
-        trainData.Order();
-        testData.Order();
+        trainData = trainData.OrderBy(x => x.Specy).ToList();
+        testData = testData.OrderBy(x => x.Specy).ToList();
         return new(trainData, testData);
     }
 
-    public async Task<Tuple<List<string>, List<string>>> SeperateTrainAndTest(float trainDataPercentile = 0.7f)
+    public async Task<Tuple<List<string>, List<string>>> SeperateTrainAndTestAndSave(string trainDataFilePath, string testDataFilePath, float trainDataPercentile = 0.7f)
     {
         List<string> trainData = new List<string>();
         List<string> testData = new List<string>();
@@ -121,8 +121,19 @@ public class PenguinsData
             }
         });
 
-        trainData.Order();
-        testData.Order();
+        trainData = trainData.Order().ToList();
+        testData = testData.Order().ToList();
+
+        if (trainDataFilePath != "")
+        {
+            await File.WriteAllLinesAsync(trainDataFilePath, trainData);
+        }
+
+        if (testDataFilePath != "")
+        {
+            await File.WriteAllLinesAsync(testDataFilePath, testData);
+        }
+
         return new(trainData, testData);
     }
 
