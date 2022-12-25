@@ -21,7 +21,7 @@ public class PenguinsData
         for (int i = 1; i < lines.Count; i++)
         {
             var columns = lines[i].Split(",");
-            if (columns.Any(x => x == "NA")) continue;
+            if (columns.Any(x => x == "NA" || x == ".")) continue;
             Penguin penguin = new()
             {
                 Specy = columns[0],
