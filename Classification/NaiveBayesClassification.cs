@@ -1,3 +1,4 @@
+using System.Net;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Security.Cryptography.X509Certificates;
@@ -138,8 +139,44 @@ public class NaiveBayesClassification
                     line.Append($"{sexPos.Value},");
                 }
                 line.Append($"{item.CulmenLengthMean},{item.CulmenLengthStd},{item.CulmenDepthMean},{item.CulmenDepthStd},{item.FlipperLengthMean},{item.FlipperLengthStd},{item.BodyMassMean},{item.BodyMassStd}");
+                lines.Add(line.ToString());
             }
+
+            await File.WriteAllLinesAsync(savePath, lines);
         }
+    }
+
+    public async Task PredictPenguinSpecy(List<Penguin> testPenguins)
+    {
+        int truePredictionCount = 0;
+        await Task.Run(() =>
+        {
+            foreach (var penguin in testPenguins)
+            {
+                Dictionary<string, double> specyPossibilities = new Dictionary<string, double>();
+                foreach (var item in modelData)
+                {
+                    double value = 1;
+                    value *= item.IslandPossibility[penguin.Island!];
+                    value *= item.SexPossibility[penguin.Sex!];
+                    value *= CalculateGaussianValue(item.CulmenLengthMean, item.CulmenLengthStd, penguin.CulmenLengthMM);
+                    value *= CalculateGaussianValue(item.CulmenDepthMean, item.CulmenDepthStd, penguin.CulmenDepthMM);
+                    value *= CalculateGaussianValue(item.FlipperLengthMean, item.FlipperLengthStd, penguin.FlipperLengthMM);
+                    value *= CalculateGaussianValue(item.BodyMassMean, item.BodyMassStd, penguin.BodyMassG);
+                    specyPossibilities.Add(item.SpecyName, value);
+                }
+
+                specyPossibilities = specyPossibilities.OrderByDescending(x => x.Value).ToDictionary(y => y.Key, z => z.Value);
+                if (specyPossibilities.First().Key == penguin.Specy)
+                {
+                    truePredictionCount++;
+                }
+            }
+        });
+
+        Console.WriteLine($"Test Data Count: {testPenguins.Count}");
+        Console.WriteLine($"True Prediction Count: {truePredictionCount}");
+        Console.WriteLine($"Accuracy: % {Math.Round(((double)truePredictionCount * 100 / (double)testPenguins.Count), 2)}");
     }
 
     #region old
@@ -303,13 +340,25 @@ public class NaiveBayesClassification
     //     return predictedClass.Equals(beanDataColumns[beanDataColumns.Count() - 1]);
     // }
     #endregion
+
+    public double CalculateGaussianValue(double mean, double standartDeviation, double penguinValue)
+    {
+        double firstArea = standartDeviation * Math.Sqrt(2 * Math.PI);
+        double secondArea = -Math.Pow((penguinValue - mean) / standartDeviation, 2) / 2;
+
+        double value = 1 / firstArea *
+                    Math.Pow(Math.E, secondArea);
+
+        return value;
+    }
+
 }
 
 public class SpecyPossibility
 {
-    public string? SpecyName { get; set; }
-    public Dictionary<string, double>? IslandPossibility { get; set; }
-    public Dictionary<string, double>? SexPossibility { get; set; }
+    public string SpecyName { get; set; }
+    public Dictionary<string, double> IslandPossibility { get; set; }
+    public Dictionary<string, double> SexPossibility { get; set; }
     public double CulmenLengthMean { get; set; }
     public double CulmenLengthStd { get; set; }
     public double CulmenDepthMean { get; set; }

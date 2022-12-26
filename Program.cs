@@ -37,3 +37,5 @@ Console.WriteLine($"Train Data: {trainPenguins.Count}, Test Data: {testPenguins.
 NaiveBayesClassification naiveBayes = new NaiveBayesClassification();
 
 await naiveBayes.TrainNaiveBayes(trainPenguins, saveFilePath);
+
+await naiveBayes.PredictPenguinSpecy(testPenguins);
