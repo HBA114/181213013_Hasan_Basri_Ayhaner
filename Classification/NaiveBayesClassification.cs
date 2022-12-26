@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Security.Cryptography.X509Certificates;
 using System.Globalization;
@@ -36,7 +37,7 @@ public class NaiveBayesClassification
     {
         var species = trainPenguins.Select(x => x.Specy).Distinct().ToList();
         var islands = trainPenguins.Select(x => x.Island).Distinct().ToList();
-
+        islands = islands.Order().ToList();
         await Task.Run(() =>
         {
             foreach (var specy in species)
@@ -62,6 +63,7 @@ public class NaiveBayesClassification
                     islandPossibilities[pos.Key] = (double)pos.Value / (double)sumIslandPos;
                 }
 
+                islandPossibilities = islandPossibilities.OrderBy(x => x.Key).ToDictionary(y => y.Key, z => z.Value);
                 // TODO: Calculate Sex Possibilities
 
                 int maleCount = specyValues.Where(x => x.Sex == "MALE").Count();
@@ -113,12 +115,29 @@ public class NaiveBayesClassification
         if (savePath != "")
         {
             List<string> lines = new List<string>();
+            StringBuilder line = new StringBuilder();
+            line.Append("Specy,");
+            foreach (var island in islands)
+            {
+                line.Append($"{island},");
+            }
+            line.Append("MALE,Female,");
+            line.Append("CulmenLengthMean,CulmenLengthStd,CulmenDepthMean,CulmenDepthStd,FlipperLengthMean,FlipperLengthStd,BodyMassMean,BodyMassStd");
+            lines.Add(line.ToString());
             foreach (var item in modelData)
             {
-                StringBuilder line = new StringBuilder();
-                int count = modelData.Count;
+                line.Clear();
                 // TODO: Find a way to save model with island and sex possibilities
-                line.Append($"{item.SpecyName}");
+                line.Append($"{item.SpecyName},");
+                foreach (var islandPos in item.IslandPossibility!)
+                {
+                    line.Append($"{islandPos.Value},");
+                }
+                foreach (var sexPos in item.SexPossibility!)
+                {
+                    line.Append($"{sexPos.Value},");
+                }
+                line.Append($"{item.CulmenLengthMean},{item.CulmenLengthStd},{item.CulmenDepthMean},{item.CulmenDepthStd},{item.FlipperLengthMean},{item.FlipperLengthStd},{item.BodyMassMean},{item.BodyMassStd}");
             }
         }
     }

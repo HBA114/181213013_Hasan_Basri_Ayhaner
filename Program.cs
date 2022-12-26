@@ -5,6 +5,7 @@ Console.WriteLine("Hello, World!");
 
 
 string datasetFilePath = "Data/penguins_size.csv";
+string saveModelFilePath = "Data/nb_model.csv";
 
 #region Path Combine
 string projectDirectory = Environment.CurrentDirectory;
@@ -16,6 +17,7 @@ if (!projectDirectory.Contains("181213013_Hasan_Basri_Ayhaner"))
     pathVariable = "181213013_Hasan_Basri_Ayhaner";
 
 string filePath = Path.Combine(projectDirectory, pathVariable, datasetFilePath);
+string saveFilePath = Path.Combine(projectDirectory, pathVariable, saveModelFilePath);
 #endregion
 
 // System.Console.WriteLine(datasetFilePath);
@@ -34,4 +36,4 @@ Console.WriteLine($"Train Data: {trainPenguins.Count}, Test Data: {testPenguins.
 
 NaiveBayesClassification naiveBayes = new NaiveBayesClassification();
 
-await naiveBayes.TrainNaiveBayes(trainPenguins);
+await naiveBayes.TrainNaiveBayes(trainPenguins, saveFilePath);
