@@ -1,8 +1,5 @@
-using System.Net;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Security.Cryptography.X509Certificates;
 using System.Globalization;
+using System.Text;
 using _181213013_Hasan_Basri_Ayhaner.Entities;
 using _181213013_Hasan_Basri_Ayhaner.Helpers;
 
@@ -34,6 +31,61 @@ public class NaiveBayesClassification
     // }
     #endregion
 
+    public async Task ReadModelFromFile(string filePath)
+    {
+        var data = await File.ReadAllLinesAsync(filePath);
+        List<string> lines = data.ToList();
+        Dictionary<string, double> islandPossibility = new Dictionary<string, double>();
+        List<string> islandKeys = new List<string>();
+        Dictionary<string, double> sexPossibility = new Dictionary<string, double>();
+        List<string> sexKeys = new List<string>();
+
+        for (int i = 0; i < lines.Count; i++)
+        {
+            var columns = lines[i].Split(",").ToList();
+            if (i == 0)
+            {
+                islandPossibility.Add(columns[1], 0);
+                islandKeys.Add(columns[1]);
+                islandPossibility.Add(columns[2], 0);
+                islandKeys.Add(columns[2]);
+                islandPossibility.Add(columns[3], 0);
+                islandKeys.Add(columns[3]);
+
+                sexPossibility.Add(columns[4], 0);
+                sexKeys.Add(columns[4]);
+                sexPossibility.Add(columns[5], 0);
+                sexKeys.Add(columns[5]);
+            }
+            else
+            {
+                for (int j = 0; j < islandKeys.Count; j++)
+                {
+                    islandPossibility[islandKeys[j]] = double.Parse(columns[j + 1], CultureInfo.InvariantCulture);
+                }
+
+                for (int j = 0; j < sexKeys.Count; j++)
+                {
+                    sexPossibility[sexKeys[j]] = double.Parse(columns[j + 4], CultureInfo.InvariantCulture);
+                }
+
+                modelData.Add(new()
+                {
+                    SpecyName = columns[0],
+                    IslandPossibility = new Dictionary<string, double>(islandPossibility),
+                    SexPossibility = new Dictionary<string, double>(sexPossibility),
+                    CulmenLengthMean = double.Parse(columns[6], CultureInfo.InvariantCulture),
+                    CulmenLengthStd = double.Parse(columns[7], CultureInfo.InvariantCulture),
+                    CulmenDepthMean = double.Parse(columns[8], CultureInfo.InvariantCulture),
+                    CulmenDepthStd = double.Parse(columns[9], CultureInfo.InvariantCulture),
+                    FlipperLengthMean = double.Parse(columns[10], CultureInfo.InvariantCulture),
+                    FlipperLengthStd = double.Parse(columns[11], CultureInfo.InvariantCulture),
+                    BodyMassMean = double.Parse(columns[12], CultureInfo.InvariantCulture),
+                    BodyMassStd = double.Parse(columns[13], CultureInfo.InvariantCulture)
+                });
+            }
+        }
+    }
     public async Task TrainNaiveBayes(List<Penguin> trainPenguins, string savePath = "")
     {
         var species = trainPenguins.Select(x => x.Specy).Distinct().ToList();
@@ -122,7 +174,7 @@ public class NaiveBayesClassification
             {
                 line.Append($"{island},");
             }
-            line.Append("MALE,Female,");
+            line.Append("MALE,FEMALE,");
             line.Append("CulmenLengthMean,CulmenLengthStd,CulmenDepthMean,CulmenDepthStd,FlipperLengthMean,FlipperLengthStd,BodyMassMean,BodyMassStd");
             lines.Add(line.ToString());
             foreach (var item in modelData)
@@ -174,9 +226,9 @@ public class NaiveBayesClassification
             }
         });
 
-        Console.WriteLine($"Test Data Count: {testPenguins.Count}");
-        Console.WriteLine($"True Prediction Count: {truePredictionCount}");
-        Console.WriteLine($"Accuracy: % {Math.Round(((double)truePredictionCount * 100 / (double)testPenguins.Count), 2)}");
+        Console.WriteLine($"Naive Bayes Test Data Count: {testPenguins.Count}");
+        Console.WriteLine($"Naive Bayes True Prediction Count: {truePredictionCount}");
+        Console.WriteLine($"Naive Bayes Accuracy: % {Math.Round(((double)truePredictionCount * 100 / (double)testPenguins.Count), 2)}");
     }
 
     #region old
@@ -370,5 +422,23 @@ public class SpecyPossibility
 
     public SpecyPossibility()
     {
+        SpecyName = "";
+        IslandPossibility = new Dictionary<string, double>();
+        SexPossibility = new Dictionary<string, double>();
+    }
+
+    public SpecyPossibility(string specyName, Dictionary<string, double> islandPossibility, Dictionary<string, double> sexPossibility, double culmenLengthMean, double culmenLengthStd, double culmenDepthMean, double culmenDepthStd, double flipperLengthMean, double flipperLengthStd, double bodyMassMean, double bodyMassStd) : this()
+    {
+        SpecyName = specyName;
+        IslandPossibility = islandPossibility;
+        SexPossibility = sexPossibility;
+        CulmenLengthMean = culmenLengthMean;
+        CulmenLengthStd = culmenLengthStd;
+        CulmenDepthMean = culmenDepthMean;
+        CulmenDepthStd = culmenDepthStd;
+        FlipperLengthMean = flipperLengthMean;
+        FlipperLengthStd = flipperLengthStd;
+        BodyMassMean = bodyMassMean;
+        BodyMassStd = bodyMassStd;
     }
 }
