@@ -8,14 +8,13 @@ namespace _181213013_Hasan_Basri_Ayhaner.Classification;
 public class NaiveBayesClassification
 {
     // TODO: Doğruluk (Accuracy), Kesinlik (Precision), Hassasiyet (Recall) ve F Score metrikleri kullanılacaktır.
-    // private string _modelPath = "";
     private List<SpecyPossibility> modelData;
 
     public NaiveBayesClassification() => modelData = new List<SpecyPossibility>();
 
-    public async Task ReadModelFromFile(string filePath)
+    public async Task ReadModelFromFile(string modelPath)
     {
-        var data = await File.ReadAllLinesAsync(filePath);
+        var data = await File.ReadAllLinesAsync(modelPath);
         List<string> lines = data.ToList();
         Dictionary<string, double> islandPossibility = new Dictionary<string, double>();
         List<string> islandKeys = new List<string>();
@@ -183,6 +182,20 @@ public class NaiveBayesClassification
     public async Task PredictPenguinSpecy(List<Penguin> testPenguins)
     {
         int truePredictionCount = 0;
+        Dictionary<string, Dictionary<string, int>> confusionMatrix = new Dictionary<string, Dictionary<string, int>>();
+
+        var species = testPenguins.Select(x => x.Specy).Distinct().ToList();
+
+        foreach (var specy in species)
+        {
+            Dictionary<string, int> subDict = new Dictionary<string, int>();
+            foreach (var subSpecy in species)
+            {
+                subDict.Add(subSpecy!, 0);
+            }
+            confusionMatrix.Add(specy!, new Dictionary<string, int>(subDict));
+        }
+
         await Task.Run(() =>
         {
             foreach (var penguin in testPenguins)
@@ -201,12 +214,50 @@ public class NaiveBayesClassification
                 }
 
                 specyPossibilities = specyPossibilities.OrderByDescending(x => x.Value).ToDictionary(y => y.Key, z => z.Value);
-                if (specyPossibilities.First().Key == penguin.Specy)
+                var predictedClassName = specyPossibilities.First().Key;
+                if (predictedClassName == penguin.Specy)
                 {
                     truePredictionCount++;
                 }
+                confusionMatrix[penguin.Specy!][predictedClassName] += 1;
             }
         });
+
+        foreach (var specy in species)
+        {
+            var truePositives = confusionMatrix[specy!][specy!];
+            var falsePositives = 0;
+            var trueNegatives = 0;
+            var falseNegatives = 0;
+
+            foreach (var item in confusionMatrix)
+            {
+                if (item.Key == specy)
+                {
+                    foreach (var sub in confusionMatrix[item.Key])
+                    {
+                        if (sub.Key != specy!)
+                            falseNegatives += sub.Value;
+                    }
+                }
+                else
+                {
+                    foreach (var sub in confusionMatrix[item.Key])
+                    {
+                        if (sub.Key == specy!)
+                            falsePositives += sub.Value;
+                        else
+                            trueNegatives += sub.Value;
+                    }
+                }
+            }
+            
+            var precision = (double)truePositives / (double)(truePositives + falsePositives);
+            var recall = (double)truePositives / (double)(truePositives + falseNegatives);
+            var f_score = 2 * ((precision * recall) / (precision + recall));
+            Console.WriteLine($"Specy: {specy}\n\tTP: {truePositives}, TN: {trueNegatives}, FP: {falsePositives}, FN: {falseNegatives}");
+            Console.WriteLine($"\tPrecision: {Math.Round(precision, 2)}, Recall: {Math.Round(recall, 2)}, F-Score: {Math.Round(f_score, 2)}\n");
+        }
 
         Console.WriteLine($"Naive Bayes Test Data Count: {testPenguins.Count}");
         Console.WriteLine($"Naive Bayes True Prediction Count: {truePredictionCount}");
