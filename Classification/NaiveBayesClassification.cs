@@ -1,3 +1,4 @@
+using System.Text;
 using System.Security.Cryptography.X509Certificates;
 using System.Globalization;
 using _181213013_Hasan_Basri_Ayhaner.Entities;
@@ -112,8 +113,13 @@ public class NaiveBayesClassification
         if (savePath != "")
         {
             List<string> lines = new List<string>();
-            int count = modelData.Count;
-            // TODO: Find a way to save model with island and sex possibilities
+            foreach (var item in modelData)
+            {
+                StringBuilder line = new StringBuilder();
+                int count = modelData.Count;
+                // TODO: Find a way to save model with island and sex possibilities
+                line.Append($"{item.SpecyName}");
+            }
         }
     }
 
