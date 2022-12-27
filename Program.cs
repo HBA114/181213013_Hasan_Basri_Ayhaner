@@ -1,4 +1,5 @@
 ﻿using _181213013_Hasan_Basri_Ayhaner.Classification;
+using _181213013_Hasan_Basri_Ayhaner.Clustering;
 using _181213013_Hasan_Basri_Ayhaner.Data;
 
 string datasetFilePath = "Data/penguins_size.csv";
@@ -33,7 +34,11 @@ Console.WriteLine($"Train Data: {trainPenguins.Count}, Test Data: {testPenguins.
 
 NaiveBayesClassification naiveBayes = new NaiveBayesClassification();
 
-await naiveBayes.TrainNaiveBayes(trainPenguins, saveFilePath);
-// await naiveBayes.ReadModelFromFile(saveFilePath);
+// await naiveBayes.TrainNaiveBayes(trainPenguins, saveFilePath);
+await naiveBayes.ReadModelFromFile(saveFilePath);
 
 await naiveBayes.PredictPenguinSpecy(testPenguins);
+
+KMeansClustering kMeansClustering = new KMeansClustering();
+
+await kMeansClustering.KMeans(trainPenguins);
