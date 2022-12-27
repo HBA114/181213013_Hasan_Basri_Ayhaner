@@ -23,6 +23,8 @@ string saveFilePath = Path.Combine(projectDirectory, pathVariable, saveModelFile
 
 var penguinsData = new PenguinsData();
 
+//! Label Encoding is Necessary in K-Means algorithm
+
 var penguins = await penguinsData.GetPenguinListAsync(filePath);
 
 var seperatedData = await penguinsData.SeperateTrainAndTestPenguins();
