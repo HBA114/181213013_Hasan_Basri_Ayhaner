@@ -153,6 +153,15 @@ public class KMeansClustering
                 }
             }
 
+            foreach (var cluster in clusters)
+            {
+                var speciesInCluster = cluster.Penguins.Select(x => x.Specy).Distinct().ToList();
+                foreach (var specy in speciesInCluster)
+                {
+                    Console.WriteLine($"Specy: {specy}, Count: {cluster.Penguins.Where(x => x.Specy == specy).Count()}");
+                }
+                Console.WriteLine();
+            }
         });
     }
 
