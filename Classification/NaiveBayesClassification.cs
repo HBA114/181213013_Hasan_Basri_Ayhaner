@@ -261,7 +261,7 @@ public class NaiveBayesClassification
 
         Console.WriteLine($"Naive Bayes Test Data Count: {testPenguins.Count}");
         Console.WriteLine($"Naive Bayes True Prediction Count: {truePredictionCount}");
-        Console.WriteLine($"Naive Bayes Accuracy: % {Math.Round(((double)truePredictionCount * 100 / (double)testPenguins.Count), 2)}");
+        Console.WriteLine($"Naive Bayes Accuracy: % {Math.Round(((double)truePredictionCount * 100 / (double)testPenguins.Count), 2)}\n");
     }
 
     public double CalculateGaussianValue(double mean, double standartDeviation, double penguinValue)

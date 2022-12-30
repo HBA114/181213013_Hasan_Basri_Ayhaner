@@ -112,8 +112,7 @@ public class KMeansClustering
                     loop = false;
                 }
 
-
-                Console.WriteLine($"E² Sum: {ESum}");
+                // Console.WriteLine($"E² Sum: {ESum}");
 
                 foreach (var cluster in clusters)
                 {
@@ -134,13 +133,6 @@ public class KMeansClustering
                             value = Math.Sqrt(value);
                             double x = value;
                             calculatedClusters.Add(clusters[i].ClusterId, x);
-
-                            // var temp = clusters.OrderBy(x => x.E2 - value).ToList();
-                            // if (temp.First().ClusterId != cluster.ClusterId)
-                            // {
-                            //     clusters.Where(x => x.ClusterId == temp.First().ClusterId).First().Penguins.Add(penguin);
-                            //     cluster.Penguins.Remove(penguin);
-                            // }
                         }
 
                         calculatedClusters = calculatedClusters.OrderBy(x => x.Value).ToDictionary(y => y.Key, z => z.Value);
@@ -155,10 +147,15 @@ public class KMeansClustering
 
             foreach (var cluster in clusters)
             {
+                Console.WriteLine($"Cluster: {cluster.ClusterId}");
                 var speciesInCluster = cluster.Penguins.Select(x => x.Specy).Distinct().ToList();
                 foreach (var specy in speciesInCluster)
                 {
-                    Console.WriteLine($"Specy: {specy}, Count: {cluster.Penguins.Where(x => x.Specy == specy).Count()}");
+                    var temp = cluster.Penguins.Where(x => x.Specy == specy).ToList();
+                    int allCount = temp.Count;
+                    int male = temp.Where(x => x.Sex == "MALE").Count();
+                    int female = temp.Where(x => x.Sex == "FEMALE").Count();
+                    Console.WriteLine($"Specy: {specy}, Count: {allCount}, Male: {male}, Female: {female}");
                 }
                 Console.WriteLine();
             }
