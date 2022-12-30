@@ -149,14 +149,19 @@ public class KMeansClustering
             {
                 Console.WriteLine($"Cluster: {cluster.ClusterId}");
                 var speciesInCluster = cluster.Penguins.Select(x => x.Specy).Distinct().ToList();
+                int sumMale = 0, sumFemale = 0;
                 foreach (var specy in speciesInCluster)
                 {
                     var temp = cluster.Penguins.Where(x => x.Specy == specy).ToList();
                     int allCount = temp.Count;
                     int male = temp.Where(x => x.Sex == "MALE").Count();
                     int female = temp.Where(x => x.Sex == "FEMALE").Count();
+                    sumMale += male;
+                    sumFemale += female;
                     Console.WriteLine($"Specy: {specy}, Count: {allCount}, Male: {male}, Female: {female}");
                 }
+                Console.WriteLine($"Male Percentage : % {Math.Round(100 * (double)sumMale/(double)(sumMale + sumFemale),2)}");
+                Console.WriteLine($"Female Percentage : % {Math.Round(100 * (double)sumFemale/(double)(sumMale + sumFemale),2)}");
                 Console.WriteLine();
             }
         });
