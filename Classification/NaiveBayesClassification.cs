@@ -223,6 +223,11 @@ public class NaiveBayesClassification
             }
         });
 
+        Console.WriteLine($"Naive Bayes Test Data Count: {testPenguins.Count}");
+        Console.WriteLine($"Naive Bayes True Prediction Count: {truePredictionCount}");
+        Console.WriteLine($"Naive Bayes Accuracy: % {Math.Round(((double)truePredictionCount * 100 / (double)testPenguins.Count), 2)}\n");
+
+        Console.WriteLine("Naive Bayes Confusion Matrices Per Specy:");
         foreach (var specy in species)
         {
             var truePositives = confusionMatrix[specy!][specy!];
@@ -251,17 +256,13 @@ public class NaiveBayesClassification
                     }
                 }
             }
-            
+
             var precision = (double)truePositives / (double)(truePositives + falsePositives);
             var recall = (double)truePositives / (double)(truePositives + falseNegatives);
             var f_score = 2 * ((precision * recall) / (precision + recall));
             Console.WriteLine($"Specy: {specy}\n\tTP: {truePositives}, TN: {trueNegatives}, FP: {falsePositives}, FN: {falseNegatives}");
             Console.WriteLine($"\tPrecision: {Math.Round(precision, 2)}, Recall: {Math.Round(recall, 2)}, F-Score: {Math.Round(f_score, 2)}\n");
         }
-
-        Console.WriteLine($"Naive Bayes Test Data Count: {testPenguins.Count}");
-        Console.WriteLine($"Naive Bayes True Prediction Count: {truePredictionCount}");
-        Console.WriteLine($"Naive Bayes Accuracy: % {Math.Round(((double)truePredictionCount * 100 / (double)testPenguins.Count), 2)}\n");
     }
 
     public double CalculateGaussianValue(double mean, double standartDeviation, double penguinValue)

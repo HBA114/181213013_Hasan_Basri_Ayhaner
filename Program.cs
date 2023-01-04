@@ -43,4 +43,4 @@ await naiveBayes.PredictPenguinSpecy(testPenguins);
 
 KMeansClustering kMeansClustering = new KMeansClustering();
 
-await kMeansClustering.KMeans(trainPenguins);
+await kMeansClustering.KMeans(penguins);

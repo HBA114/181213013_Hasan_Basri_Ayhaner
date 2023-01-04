@@ -145,23 +145,25 @@ public class KMeansClustering
                 }
             }
 
+            Console.WriteLine("K-Means Clustering");
             foreach (var cluster in clusters)
             {
+                double penguinsSize = cluster.Penguins.Count();
                 Console.WriteLine($"Cluster: {cluster.ClusterId}");
                 var speciesInCluster = cluster.Penguins.Select(x => x.Specy).Distinct().ToList();
                 int sumMale = 0, sumFemale = 0;
                 foreach (var specy in speciesInCluster)
                 {
                     var temp = cluster.Penguins.Where(x => x.Specy == specy).ToList();
-                    int allCount = temp.Count;
+                    double allCount = temp.Count;
                     int male = temp.Where(x => x.Sex == "MALE").Count();
                     int female = temp.Where(x => x.Sex == "FEMALE").Count();
                     sumMale += male;
                     sumFemale += female;
-                    Console.WriteLine($"Specy: {specy}, Count: {allCount}, Male: {male}, Female: {female}");
+                    Console.WriteLine($"Specy: {specy}, Count: {allCount}, Male: {male}, Female: {female}, Specy Percentage: %{Math.Round(100 * allCount / penguinsSize, 2)}, Male Percentage: %{Math.Round(100 * male / allCount, 2)}, Female Percentage: %{Math.Round(100 * female / allCount, 2)}");
                 }
-                Console.WriteLine($"Male Percentage : % {Math.Round(100 * (double)sumMale/(double)(sumMale + sumFemale),2)}");
-                Console.WriteLine($"Female Percentage : % {Math.Round(100 * (double)sumFemale/(double)(sumMale + sumFemale),2)}");
+                Console.WriteLine($"Male Percentage : % {Math.Round(100 * (double)sumMale / (double)(sumMale + sumFemale), 2)}");
+                Console.WriteLine($"Female Percentage : % {Math.Round(100 * (double)sumFemale / (double)(sumMale + sumFemale), 2)}");
                 Console.WriteLine();
             }
         });
