@@ -9,7 +9,6 @@ public class NaiveBayesClassification
 {
     // TODO: Doğruluk (Accuracy), Kesinlik (Precision), Hassasiyet (Recall) ve F Score metrikleri kullanılacaktır.
     private List<SpecyPossibility> modelData;
-
     public NaiveBayesClassification() => modelData = new List<SpecyPossibility>();
 
     public async Task ReadModelFromFile(string modelPath)
@@ -69,6 +68,7 @@ public class NaiveBayesClassification
     }
     public async Task TrainNaiveBayes(List<Penguin> trainPenguins, string savePath = "")
     {
+        //! Specy Possibility (specy.Count / species.Count) ????
         var species = trainPenguins.Select(x => x.Specy).Distinct().ToList();
         var islands = trainPenguins.Select(x => x.Island).Distinct().ToList();
         islands = islands.Order().ToList();

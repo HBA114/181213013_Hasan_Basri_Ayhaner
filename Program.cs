@@ -18,9 +18,6 @@ string filePath = Path.Combine(projectDirectory, pathVariable, datasetFilePath);
 string saveFilePath = Path.Combine(projectDirectory, pathVariable, saveModelFilePath);
 #endregion
 
-// System.Console.WriteLine(datasetFilePath);
-// System.Console.WriteLine(filePath);
-
 var penguinsData = new PenguinsData();
 
 //! Label Encoding is Necessary in K-Means algorithm
