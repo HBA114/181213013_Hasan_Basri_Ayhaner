@@ -116,8 +116,8 @@ while (!exit)
                 seperatedData = await penguinsData.SeperateTrainAndTestPenguins();
             }
             //! else read seperated data and assign to penguin list
-            trainPenguins = seperatedData.Item1;
-            testPenguins = seperatedData.Item2;
+            trainPenguins = seperatedData?.Item1;
+            testPenguins = seperatedData?.Item2;
             #endregion
             break;
 
